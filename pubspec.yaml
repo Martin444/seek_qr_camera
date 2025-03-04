@@ -17,6 +17,7 @@ dependencies:
   #Utils
   pinput: ^5.0.1
   equatable: ^2.0.7
+  pigeon: ^24.2.1
 
 dev_dependencies:
   flutter_test:
