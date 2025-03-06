@@ -1,6 +1,7 @@
 package com.camera.qr.seek.seek_qr_camera
 import com.camera.qr.seek.seek_qr_cam.simple_camera.CameraImpl
 import com.camera.qr.seek.seek_qr_cam.simple_camera.CameraState
+import com.camera.qr.seek.seek_qr_cam.simple_camera.CameraPreviewViewFactory
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -12,6 +13,7 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.platform.PlatformViewRegistry
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +41,7 @@ class MainActivity : FlutterFragmentActivity() {
         initEncryptedSharedPreferences()
         // Inicializar CameraImpl
         cameraHandler = CameraImpl(this, this)
+        
     }
     
 
@@ -66,6 +69,8 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        val registry: PlatformViewRegistry = flutterEngine?.platformViewsController?.registry ?: return 
+        registry.registerViewFactory("camera_preview", CameraPreviewViewFactory())
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, biometricChannelId).setMethodCallHandler { call, result ->
             when (call.method) {

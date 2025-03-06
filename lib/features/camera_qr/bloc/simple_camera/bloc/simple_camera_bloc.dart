@@ -16,6 +16,7 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     try {
       final response = await cameraRepository.openCamera(event.arguments);
       emit(CameraSuccess(response: response));
+      event.navigator.pushReplacementNamed('/home');
     } catch (e) {
       emit(CameraFailure(error: e.toString()));
     }

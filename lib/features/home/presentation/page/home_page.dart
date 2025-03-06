@@ -28,7 +28,12 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.read<CameraBloc>().add(const OpenCameraEvent(arguments: {}));
+          context.read<CameraBloc>().add(
+                OpenCameraEvent(
+                  arguments: {},
+                  navigator: Navigator.of(context),
+                ),
+              );
         },
         child: Icon(Icons.qr_code),
       ),
