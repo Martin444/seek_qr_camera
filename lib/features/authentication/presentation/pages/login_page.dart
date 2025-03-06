@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seek_qr_camera/core/usescase/shared_preferences_usescase.dart';
 import 'package:seek_qr_camera/features/authentication/bloc/pin_auth/bloc/pin_auth_bloc.dart';
 import 'package:seek_qr_camera/features/authentication/presentation/widgets/fingerprint_auth_widget.dart';
 
@@ -19,7 +20,9 @@ class LoginPage extends StatelessWidget {
               height: 120,
             ),
             PinAuthWidget(
-              bloc: PinAuthBloc(),
+              bloc: PinAuthBloc(
+                EncryptedPreferencesUsescases(),
+              ),
             ),
             SizedBox(
               height: 30,

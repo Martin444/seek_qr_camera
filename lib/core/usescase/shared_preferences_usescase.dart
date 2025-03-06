@@ -13,12 +13,12 @@ class EncryptedPreferencesUsescases {
   /// Se espera que el código nativo retorne un Map que contenga la clave 'value'.
   Future<String?> getEncryptedString(String key) async {
     // Invoca el método nativo y captura la respuesta.
-    final Map<String, dynamic> result = await _channel.invokeMethod('getEncryptedString', {'key': key});
+    final Map<String, dynamic>? result = await _channel.invokeMethod('getEncryptedString', {'key': key});
 
     // Se espera que el Map contenga la clave 'value'. Si no se encuentra,
     // se retorna null.
-    if (result.containsKey('value')) {
-      return result['value'] as String?;
+    if (result?.containsKey('value') ?? false) {
+      return result?['value'] as String?;
     }
     return null;
   }

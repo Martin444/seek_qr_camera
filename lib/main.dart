@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:seek_qr_camera/core/channels/biometric_auth_channel.dart';
+import 'package:seek_qr_camera/core/channels/shared_preferences_channel.dart';
 import 'package:seek_qr_camera/core/middleware/route_middleware.dart';
+import 'package:seek_qr_camera/core/usescase/shared_preferences_usescase.dart';
 import 'package:seek_qr_camera/features/authentication/bloc/authentication_bloc.dart';
 import 'package:seek_qr_camera/features/authentication/data/repository/biometric_auth_repository.dart';
 import 'package:seek_qr_camera/routes/app_routes.dart';
@@ -26,7 +28,11 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<PinAuthBloc>(
-          create: (context) => PinAuthBloc(),
+          create: (context) => PinAuthBloc(
+            EncryptedPreferencesUsescases(
+              channel: SharedPreferencesChannel(),
+            ),
+          ),
         ),
         BlocProvider<FingerprintAuthBloc>(
           create: (context) => FingerprintAuthBloc(
@@ -37,7 +43,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Seek prueba tecnica',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

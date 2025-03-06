@@ -5,9 +5,40 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Generamos una lista de textos para mostrar en el body
+    final List<String> items = List.generate(20, (index) => 'Item ${index + 1}');
+
     return Scaffold(
-      body: Center(
-        child: Text('data'),
+      appBar: AppBar(
+        title: const Text('Seek QR Camera'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            tooltip: 'Cerrar sesión',
+            onPressed: () {
+              // Aquí se puede implementar la lógica de cierre de sesión.
+              // Por ejemplo, se puede limpiar el estado global y navegar a la pantalla de login.
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.qr_code),
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: items.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              items[index],
+              style: const TextStyle(fontSize: 18),
+            ),
+          );
+        },
       ),
     );
   }

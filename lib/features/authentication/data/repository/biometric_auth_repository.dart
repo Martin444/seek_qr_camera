@@ -12,7 +12,7 @@ class BiometricAuthRepository {
   Future<AuthResponseModel> authenticate(String promptMessage) async {
     try {
       final result = await _channel.invokeMethod('authenticate', {'promptMessage': promptMessage});
-      return AuthResponseModel.fromMap(result);
+      return AuthResponseModel.fromMap(result!);
     } catch (e) {
       throw Exception('$e');
     }

@@ -19,7 +19,8 @@ import android.security.keystore.KeyProperties
 import android.content.SharedPreferences
 
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.camera.qr.seek.seek_qr_camera/biometric_auth"
+    private val biometricChannelId = "com.camera.qr.seek.seek_qr_camera/biometric_auth"
+    private val encryptedChannelId = "com.camera.qr.seek.seek_qr_camera/shared_preferences"
     private val TAG = "MainActivity"
 
     private lateinit var encryptedSharedPreferences: SharedPreferences
@@ -54,9 +55,15 @@ class MainActivity : FlutterFragmentActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, biometricChannelId).setMethodCallHandler { call, result ->
             when (call.method) {
                 "authenticate" -> authenticate(call, result)
+                else -> result.notImplemented()
+            }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, encryptedChannelId).setMethodCallHandler { call, result ->
+            when (call.method) {
                 "getEncryptedString" -> getEncryptedString(call, result)
                 "setEncryptedString" -> setEncryptedString(call, result)
                 else -> result.notImplemented()
@@ -98,6 +105,6 @@ class MainActivity : FlutterFragmentActivity() {
         val key = call.argument<String>("key")
         val value = call.argument<String>("value")
         encryptedSharedPreferences.edit().putString(key, value).apply()
-        result.success(null)
+        result.success(value)
     }
 }
