@@ -1,10 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:seek_qr_camera/core/channels/global_channel_impl.dart';
 
-// Implementación estándar utilizando MethodChannel
-class BiometricAuthChannel implements GlobalChannelImpl {
-  static const MethodChannel _channel = MethodChannel('com.camera.qr.seek.seek_qr_camera/biometric_auth');
-
+class SharedPreferencesChannel implements GlobalChannelImpl {
+  static const MethodChannel _channel = MethodChannel('com.camera.qr.seek.seek_qr_camera/shared_preferences');
   @override
   Future<Map<String, dynamic>> invokeMethod(String method, Map<String, dynamic> arguments) async {
     final result = await _channel.invokeMethod(method, arguments);

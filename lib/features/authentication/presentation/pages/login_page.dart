@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seek_qr_camera/features/authentication/bloc/pin_auth/bloc/pin_auth_bloc.dart';
+import 'package:seek_qr_camera/features/authentication/presentation/widgets/fingerprint_auth_widget.dart';
 
 import '../widgets/pin_auth_widget.dart';
 
@@ -9,33 +10,23 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(
-            height: 120,
-          ),
-          PinAuthWidget(
-            bloc: PinAuthBloc(),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: Row(
-                  children: [
-                    Icon(Icons.fingerprint),
-                    Text('Usar huella digital'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+      body: Container(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 120,
+            ),
+            PinAuthWidget(
+              bloc: PinAuthBloc(),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            FingerprintAuthButton()
+          ],
+        ),
       ),
     );
   }
