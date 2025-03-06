@@ -1,36 +1,76 @@
 # seek_qr_camera
 
-Prueba tecnica para seek usando patrón BLoc e integración Nativa.
+Prueba técnica para seek utilizando el patrón BLoC e integración nativa.
 
-# Proyecto Dart: Configuraciones de VSCode
+---
 
-Este proyecto utiliza configuraciones personalizadas en VSCode para lanzar la aplicación Dart en diferentes entornos. Las configuraciones están definidas en el archivo `.vscode/launch.json` y permiten iniciar la aplicación con parámetros específicos para distintos escenarios.
+## Configuraciones VSCode
 
-## Configuraciones disponibles
+El proyecto incluye varias configuraciones personalizadas para ejecutar y compilar la aplicación:
 
-### sk_dev (Desarrollo)
-- **Archivo de programa:** `lib/main.dart`
-- **Argumentos:** `--dart-define=PIN=3001`
-- **Uso:** Configuración ideal para entornos de desarrollo. Selecciona esta configuración desde el menú de depuración en VSCode para iniciar la aplicación en modo de desarrollo con el PIN configurado a `3001`.
+- **sk_dev (Desarrollo)**
+  - Programa: `lib/main.dart`
+  - Argumentos: `--dart-define=PIN=3001`
 
-### sk_qa (Calidad)
-- **Archivo de programa:** `lib/main.dart`
-- **Argumentos:** `--dart-define=PIN=1234`
-- **Uso:** Configuración destinada a entornos de calidad (QA). Usa este perfil para pruebas que requieran el PIN establecido a `1234`.
+- **sk_qa (Calidad)**
+  - Programa: `lib/main.dart`
+  - Argumentos: `--dart-define=PIN=1234`
 
-## Cómo utilizar estas configuraciones
+- **sk_build_apk (Compilación Release)**
+  - Programa: `lib/main.dart`
+  - Modo: Release
+  - Argumentos: `--dart-define=PIN=3001`
 
-1. **Abrir el proyecto en VSCode:** Asegúrate de tener instalado el plugin de Dart y, si es necesario, el de Flutter.
-2. **Seleccionar la configuración de depuración:** Abre la pestaña de **Run and Debug** (Depurar) en VSCode. Haz clic en el selector de configuraciones y elige `sk_dev` o `sk_qa` según el entorno deseado.
-3. **Iniciar la depuración:** Presiona el botón de "Play" (Iniciar) o utiliza el atajo correspondiente para comenzar la ejecución de la aplicación con la configuración seleccionada.
+---
+
+## Uso
+
+1. Abre el proyecto en VSCode (asegúrate de tener instalados los plugins de Dart y Flutter).
+2. Ve a la pestaña **Run and Debug**.
+3. Selecciona la configuración deseada (sk_dev, sk_qa o sk_build_apk) y ejecuta la acción correspondiente.
+
+---
+
+## Estructura del Proyecto
+
+El código se organiza de la siguiente manera:
+
+- **lib/**
+  - **core/**: Lógica central, conexión a los CHANNELS nativos de Android, middlewares y casos de uso (ej. autenticación biométrica y manejo de preferencias).
+  - **feature/**
+    - **authentication/**: Autenticación (huella y PIN) con BLoC.
+    - **camera_qr/**: Funcionalidad de cámara y códigos QR (lógica y vistas).
+    - **home/**: Página principal.
+  - **routes/**: Definición de rutas de la aplicación.
+  - `main.dart`: Punto de entrada.
+  - `pigeon.dart`: Comunicación entre Flutter y código nativo.
+
+- **Código Nativo (Android)**
+  - **auth/**: 
+    - `AuthModel.kt`: Modelo de autenticación.
+    - `BiometricAuthApi.kt`: API para autenticación biométrica.
+    - `BiometricAuthManager.kt`: Gestión de autenticación biométrica.
+  - **shared_preferences/**:  
+    - `EncryptedSharedPreferences.kt`: Implementación de preferencias encriptadas.
+  - **simple_camera/**:
+    - `CameraImpl.kt`: Lógica de la cámara.
+    - `CameraPreviewView.kt`: Vista de previsualización de la cámara.
+    - `CameraPreviewViewFactory.kt`: Fábrica para la vista de la cámara.
+  - `MainActivity.kt`: Actividad principal que integra Flutter y el código nativo.
+
+---
+
+## Integración de Platform Views
+
+La aplicación utiliza Platform Views para integrar vistas nativas (como la previsualización de la cámara mediante AndroidView) en Flutter. La configuración se realiza en el archivo `MainActivity.kt`, donde se registran estas vistas.
+
+---
 
 ## Personalización
 
-- **Modificar argumentos y variables de entorno:** Puedes añadir o cambiar los argumentos en la sección `args` de cada configuración en `.vscode/launch.json` para ajustarse a tus necesidades.
-- **Ajuste del archivo de programa:** Si el archivo principal de la aplicación no se encuentra en `lib/main.dart`, cambia la propiedad `"program"` para apuntar a la ruta correcta.
+- Puedes modificar los argumentos y ajustes en `.vscode/launch.json` según el entorno.
+- Si cambias el punto de entrada, ajusta la ruta del archivo en la configuración de VSCode.
 
-## Recursos adicionales
+---
 
-- [Documentación de VSCode para Dart](https://go.microsoft.com/fwlink/?linkid=830387): Encuentra más información sobre las posibles configuraciones y uso de variables de entorno en aplicaciones Dart.
-
-Este README proporciona una guía rápida para entender y utilizar las configuraciones disponibles en este proyecto. ¡Disfruta programando!
+¡Disfruta desarrollando y probando la aplicación!
