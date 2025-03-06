@@ -7,6 +7,8 @@ import 'package:seek_qr_camera/core/middleware/route_middleware.dart';
 import 'package:seek_qr_camera/core/usescase/shared_preferences_usescase.dart';
 import 'package:seek_qr_camera/features/authentication/bloc/authentication_bloc.dart';
 import 'package:seek_qr_camera/features/authentication/data/repository/biometric_auth_repository.dart';
+import 'package:seek_qr_camera/features/camera_qr/bloc/simple_camera/bloc/simple_camera_bloc.dart';
+import 'package:seek_qr_camera/features/camera_qr/data/repository/camera_repository.dart';
 import 'package:seek_qr_camera/routes/app_routes.dart';
 
 void main() {
@@ -39,6 +41,11 @@ class MyApp extends StatelessWidget {
             repository: BiometricAuthRepository(
               BiometricAuthChannel(),
             ),
+          ),
+        ),
+        BlocProvider<CameraBloc>(
+          create: (context) => CameraBloc(
+            cameraRepository: CameraRepository(),
           ),
         ),
       ],

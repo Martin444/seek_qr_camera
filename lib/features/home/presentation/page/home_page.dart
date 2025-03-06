@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../camera_qr/bloc/simple_camera/simple_camera.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -24,7 +27,9 @@ class HomePage extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          context.read<CameraBloc>().add(const OpenCameraEvent(arguments: {}));
+        },
         child: Icon(Icons.qr_code),
       ),
       body: ListView.builder(

@@ -1,0 +1,15 @@
+import 'package:flutter/services.dart';
+import 'package:seek_qr_camera/core/channels/global_channel_impl.dart';
+
+class CameraChannel implements GlobalChannelImpl {
+  static const MethodChannel _channel = MethodChannel('com.camera.qr.seek.seek_qr_camera/camera');
+  @override
+  Future<Map<String, dynamic>?> invokeMethod(String method, Map<String, dynamic> arguments) async {
+    final result = await _channel.invokeMethod(method, arguments);
+    if (result is String) {
+      return Map<String, dynamic>.from({'value': result});
+    } else {
+      throw Exception('Respuesta inválida del código nativo. $result');
+    }
+  }
+}

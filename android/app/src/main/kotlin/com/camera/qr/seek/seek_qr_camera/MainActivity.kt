@@ -1,4 +1,5 @@
 package com.camera.qr.seek.seek_qr_camera
+import com.camera.qr.seek.seek_qr_cam.simple_camera.CameraImpl
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -21,14 +22,19 @@ import android.content.SharedPreferences
 class MainActivity : FlutterFragmentActivity() {
     private val biometricChannelId = "com.camera.qr.seek.seek_qr_camera/biometric_auth"
     private val encryptedChannelId = "com.camera.qr.seek.seek_qr_camera/shared_preferences"
+    private val cameraChannelId = "com.camera.qr.seek.seek_qr_camera/camera"
     private val TAG = "MainActivity"
 
     private lateinit var encryptedSharedPreferences: SharedPreferences
+    private lateinit var cameraHandler: CameraImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initEncryptedSharedPreferences()
+        // Inicializar CameraImpl
+        cameraHandler = CameraImpl(this, this)
     }
+    
 
     private fun initEncryptedSharedPreferences() {
         val spec = KeyGenParameterSpec.Builder(
@@ -66,6 +72,16 @@ class MainActivity : FlutterFragmentActivity() {
             when (call.method) {
                 "getEncryptedString" -> getEncryptedString(call, result)
                 "setEncryptedString" -> setEncryptedString(call, result)
+                else -> result.notImplemented()
+            }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, cameraChannelId).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "openCamera" -> {
+                    cameraHandler.init()
+                    // result.success(null)
+                }
                 else -> result.notImplemented()
             }
         }
