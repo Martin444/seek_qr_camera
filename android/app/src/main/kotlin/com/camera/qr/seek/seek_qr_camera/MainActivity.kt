@@ -1,5 +1,6 @@
 package com.camera.qr.seek.seek_qr_camera
 import com.camera.qr.seek.seek_qr_cam.simple_camera.CameraImpl
+import com.camera.qr.seek.seek_qr_cam.simple_camera.CameraState
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -12,6 +13,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodCall
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
@@ -79,8 +85,16 @@ class MainActivity : FlutterFragmentActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, cameraChannelId).setMethodCallHandler { call, result ->
             when (call.method) {
                 "openCamera" -> {
-                    cameraHandler.init()
-                    // result.success(null)
+                    // Lanzamos una coroutine para recolectar el Flow
+                    CoroutineScope(Dispatchers.Main).launch {
+                        // Esperamos a que el flow emita un estado que no sea Starting (es decir, un estado final)
+                        val state = cameraHandler.initFlow().first { it !is CameraState.Starting }
+                        when (state) {
+                            is CameraState.Started -> result.success("Camera started")
+                            is CameraState.Error -> result.error("CAMERA_ERROR", state.message, null)
+                            else -> result.error("UNKNOWN_STATE", "Estado inesperado", null)
+                        }
+                    }
                 }
                 else -> result.notImplemented()
             }

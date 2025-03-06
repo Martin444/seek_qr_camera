@@ -10,25 +10,50 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import androidx.lifecycle.LifecycleOwner
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
+sealed class CameraState {
+    object Starting : CameraState()
+    object Started : CameraState()
+    data class Error(val message: String?) : CameraState()
+}
 
 class CameraImpl(private val context: Context, private val lifecycleOwner: LifecycleOwner) {
 
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
 
-    fun init() {
-        // Inicializar el ejecutor de cámara
+    fun initFlow(): Flow<CameraState> = callbackFlow {
         cameraExecutor = Executors.newSingleThreadExecutor()
-        // Iniciar la cámara
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
+        trySend(CameraState.Starting)
+        if (!allPermissionsGranted()) {
             requestPermissions()
+            trySend(CameraState.Error("Permisos no concedidos"))
+            close()
+        } else {
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+            cameraProviderFuture.addListener({
+                try {
+                    val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    cameraProvider.unbindAll()
+                    imageCapture = ImageCapture.Builder().build()
+                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture)
+                    trySend(CameraState.Started)
+                } catch (exc: Exception) {
+                    Toast.makeText(context, "Error al iniciar la cámara: ${exc.message}", Toast.LENGTH_SHORT).show()
+                    trySend(CameraState.Error("Error al iniciar la cámara: ${exc.message}"))
+                }
+                close() // cerramos el flow una vez emitido el estado
+            }, ContextCompat.getMainExecutor(context))
         }
+        awaitClose { /* Se pueden liberar recursos si es necesario */ }
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
@@ -57,7 +82,7 @@ class CameraImpl(private val context: Context, private val lifecycleOwner: Lifec
     }
 
     fun takePhoto(outputDirectory: File, onImageSaved: (File) -> Unit) {
-        val imageCapture = imageCapture ?: return
+        val capture = imageCapture ?: return
 
         val photoFile = File(
             outputDirectory,
@@ -66,8 +91,9 @@ class CameraImpl(private val context: Context, private val lifecycleOwner: Lifec
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        imageCapture.takePicture(
-            outputOptions, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
+        capture.takePicture(
+            outputOptions, ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Toast.makeText(context, "Error al capturar imagen: ${exc.message}", Toast.LENGTH_SHORT).show()
                 }
